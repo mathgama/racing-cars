@@ -1,5 +1,6 @@
 import pygame
-from utils import scale_image
+import math
+from utils import scale_image, blit_rotate_center
 
 CAR = scale_image(pygame.image.load("imgs/red-car.png"), 0.5)
 
@@ -12,11 +13,17 @@ class Car:
         self.angle = 0
         self.x, self.y = starting_pos
 
-    def accelerate(self):
-        self.actual_speed += self.accel_rate
+    def move_forward(self):
+        self.actual_speed = min(self.actual_speed + self.accel_rate, self.max_speed)
+        self.move()
 
-    def brake(self):
-        self.actual_speed -= self.accel_rate * 2
+    def move(self):
+        radians = math.radians(self.angle)
+        horizontal = math.sin(radians) * self.actual_speed
+        vertical = math.cos(radians) * self.actual_speed
+
+        self.x -= horizontal
+        self.y -= vertical
 
     def turn(self, left=False, right=False):
         if left:
@@ -25,5 +32,7 @@ class Car:
             self.angle -= self.rotation_rate
 
     def draw(self, win):
-        win.blit(CAR, (self.x, self.y))
-        pygame.display.update()
+        blit_rotate_center(win, CAR, (self.x, self.y), self.angle)
+        #win.blit(CAR, (self.x, self.y))
+
+    

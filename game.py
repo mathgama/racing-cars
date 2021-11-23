@@ -1,6 +1,5 @@
 import pygame
 import time
-import math
 from utils import scale_image
 from car import Car
 
@@ -14,11 +13,18 @@ WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Racing Cars")
 
-def draw(win, images):
+FPS = 60
+
+def draw(win, images, car):
     for img, pos in images:
         win.blit(img, pos)
 
+    car.draw(win)
+    pygame.display.update()
+
+
 def main():
+    clock = pygame.time.Clock()
     running = True
 
     images = [
@@ -26,17 +32,30 @@ def main():
         (TRACK, (0, 0))
     ]
 
-    draw(WIN, images)
-    pygame.display.update()
-
-    car = Car(1, 10, 1, (190, 220))
-    car.draw(WIN)
+    car = Car(accel_rate=0.5, 
+              max_speed=4, 
+              rotation_rate=4, 
+              starting_pos=(190, 220))
     
     while running:
+        clock.tick(FPS)
+
+        draw(WIN, images, car)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 break
+
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_a]:
+            car.turn(left=True)
+        if keys[pygame.K_d]:
+            car.turn(right=True)
+        if keys[pygame.K_w]:
+            car.move_forward()
+
 
     pygame.quit()
 
