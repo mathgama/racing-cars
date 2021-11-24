@@ -47,6 +47,8 @@ def main():
                 running = False
                 break
 
+        accelerating = False
+
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
@@ -54,7 +56,11 @@ def main():
         if keys[pygame.K_d]:
             car.turn(right=True)
         if keys[pygame.K_w]:
-            car.move_forward()
+            car.accelerate()
+            accelerating = True
+
+        if not accelerating:
+            car.decelerate()
 
 
     pygame.quit()

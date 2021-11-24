@@ -13,8 +13,12 @@ class Car:
         self.angle = 0
         self.x, self.y = starting_pos
 
-    def move_forward(self):
+    def accelerate(self):
         self.actual_speed = min(self.actual_speed + self.accel_rate, self.max_speed)
+        self.move()
+
+    def decelerate(self):
+        self.actual_speed = max(self.actual_speed - self.accel_rate / 2, 0)
         self.move()
 
     def move(self):
@@ -33,6 +37,5 @@ class Car:
 
     def draw(self, win):
         blit_rotate_center(win, CAR, (self.x, self.y), self.angle)
-        #win.blit(CAR, (self.x, self.y))
 
     
