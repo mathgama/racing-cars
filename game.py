@@ -6,6 +6,7 @@ from car import Car
 GRASS = scale_image(pygame.image.load("imgs/grass.jpg"), 2.2)
 TRACK = pygame.image.load("imgs/track.png")
 TRACK_BORDER = pygame.image.load("imgs/track-border.png")
+TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
 FINISH = pygame.image.load("imgs/finish.png")
 
 WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
@@ -62,6 +63,8 @@ def main():
         if not accelerating:
             car.decelerate()
 
+        if car.collide(TRACK_BORDER_MASK) == True:
+            car.crash()
 
     pygame.quit()
 

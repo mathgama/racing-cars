@@ -1,6 +1,6 @@
 import pygame
 import math
-from utils import scale_image, blit_rotate_center
+from utils import scale_image, rotate_center
 
 CAR = scale_image(pygame.image.load("imgs/red-car.png"), 0.5)
 
@@ -36,6 +36,17 @@ class Car:
             self.angle -= self.rotation_rate
 
     def draw(self, win):
-        blit_rotate_center(win, CAR, (self.x, self.y), self.angle)
+        rotated_image, rect = rotate_center(CAR, (self.x, self.y), self.angle)
+        win.blit(rotated_image, rect.topleft)
 
-    
+    def collide(self, mask, x=0, y=0):
+        rotated_image, rect = rotate_center(CAR, (self.x, self.y), self.angle)
+        car_mask = pygame.mask.from_surface(rotated_image)
+        offset = (int(rect.x - x), int(rect.y - y))
+        return True if mask.overlap(car_mask, offset) else False
+
+    def crash(self):
+        self.actual_speed = 0
+        self.accel_rate = 0
+        self.max_speed = 0
+        self.rotation_rate = 0
