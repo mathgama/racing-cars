@@ -16,16 +16,22 @@ class Car:
         self.sensors_update()
 
     def sensors_update(self):
-        radians = math.radians(self.angle + 180)
-        self.front_sensor = self.find_obstacle_distance(radians)
-        
         radians = math.radians(self.angle + 90)
-        self.right_sensor = self.find_obstacle_distance(radians)
+        self.r_sensor = self.find_obstacle_distance(radians)
+
+        radians = math.radians(self.angle + 135)
+        self.fr_sensor = self.find_obstacle_distance(radians)
+
+        radians = math.radians(self.angle + 180)
+        self.f_sensor = self.find_obstacle_distance(radians)
+
+        radians = math.radians(self.angle + 225)
+        self.fl_sensor = self.find_obstacle_distance(radians)
 
         radians = math.radians(self.angle + 270)
-        self.left_sensor = self.find_obstacle_distance(radians)
+        self.l_sensor = self.find_obstacle_distance(radians)
 
-        print('f:', self.front_sensor, 'r:', self.right_sensor, 'l:', self.left_sensor)
+        #print('f:', self.front_sensor, 'r:', self.right_sensor, 'l:', self.left_sensor)
 
     def find_obstacle_distance(self, radians):
         horizontal = math.sin(radians)
