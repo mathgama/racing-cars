@@ -8,6 +8,7 @@ TRACK = pygame.image.load("imgs/track.png")
 TRACK_BORDER = pygame.image.load("imgs/track-border.png")
 TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
 FINISH = pygame.image.load("imgs/finish.png")
+CAR_STARTING_POS = (190, 220)
 
 WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
 
@@ -33,10 +34,7 @@ def main():
         (TRACK, (0, 0))
     ]
 
-    car = Car(accel_rate=0.5, 
-              max_speed=4, 
-              rotation_rate=4, 
-              starting_pos=(190, 220))
+    car = Car(starting_pos=CAR_STARTING_POS)
     
     while running:
         clock.tick(FPS)
@@ -65,10 +63,7 @@ def main():
 
         if car.collide(TRACK_BORDER_MASK) == True:
             car.crash()
-            car = Car(accel_rate=0.5, 
-              max_speed=4, 
-              rotation_rate=4, 
-              starting_pos=(190, 220))
+            car = Car(starting_pos=CAR_STARTING_POS)
 
 
     pygame.quit()

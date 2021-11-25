@@ -6,7 +6,7 @@ CAR = scale_image(pygame.image.load("imgs/red-car.png"), 0.5)
 TRACK_BORDER = pygame.image.load("imgs/track-border.png")
 
 class Car:
-    def __init__(self, accel_rate, max_speed, rotation_rate, starting_pos):
+    def __init__(self, starting_pos, accel_rate=0.5, max_speed=3, rotation_rate=3):
         self.accel_rate = accel_rate
         self.max_speed = max_speed
         self.actual_speed = 0
