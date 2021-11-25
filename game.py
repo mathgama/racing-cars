@@ -65,6 +65,11 @@ def main():
 
         if car.collide(TRACK_BORDER_MASK) == True:
             car.crash()
+            car = Car(accel_rate=0.5, 
+              max_speed=4, 
+              rotation_rate=4, 
+              starting_pos=(190, 220))
+
 
     pygame.quit()
 

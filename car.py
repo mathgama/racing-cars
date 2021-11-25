@@ -3,6 +3,7 @@ import math
 from utils import scale_image, rotate_center
 
 CAR = scale_image(pygame.image.load("imgs/red-car.png"), 0.5)
+TRACK_BORDER = pygame.image.load("imgs/track-border.png")
 
 class Car:
     def __init__(self, accel_rate, max_speed, rotation_rate, starting_pos):
@@ -12,12 +13,48 @@ class Car:
         self.rotation_rate = rotation_rate
         self.angle = 0
         self.x, self.y = starting_pos
+        self.sensors_update()
+
+    def sensors_update(self):
+        radians = math.radians(self.angle + 180)
+        self.front_sensor = self.find_obstacle_distance(radians)
+        
+        radians = math.radians(self.angle + 90)
+        self.right_sensor = self.find_obstacle_distance(radians)
+
+        radians = math.radians(self.angle + 270)
+        self.left_sensor = self.find_obstacle_distance(radians)
+
+        print('f:', self.front_sensor, 'r:', self.right_sensor, 'l:', self.left_sensor)
+
+    def find_obstacle_distance(self, radians):
+        horizontal = math.sin(radians)
+        vertical = math.cos(radians)
+
+        obstacle = False
+
+        track_x = self.x
+        track_y = self.y
+
+        while obstacle != True:
+            track_x += horizontal
+            track_y += vertical
+
+            r, g, b, a = TRACK_BORDER.get_at((int(track_x), int(track_y)))
+
+            if a != 0:
+                distance = math.sqrt((track_x - self.x)**2 + (track_y - self.y)**2)
+                return distance
+
 
     def accelerate(self):
         self.actual_speed = min(self.actual_speed + self.accel_rate, self.max_speed)
         self.move()
 
     def decelerate(self):
+        if self.actual_speed == 0:
+            return
+
         self.actual_speed = max(self.actual_speed - self.accel_rate / 2, 0)
         self.move()
 
@@ -29,11 +66,15 @@ class Car:
         self.x -= horizontal
         self.y -= vertical
 
+        self.sensors_update()
+
     def turn(self, left=False, right=False):
         if left:
             self.angle += self.rotation_rate
         elif right:
             self.angle -= self.rotation_rate
+
+        self.sensors_update()
 
     def draw(self, win):
         rotated_image, rect = rotate_center(CAR, (self.x, self.y), self.angle)
