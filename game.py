@@ -72,7 +72,9 @@ def main():
     images = [
         (GRASS, (0, 0)),
         (TRACK, (0, 0)),
-        #(WAVEFRONT_SURFACE, (0, 0))
+        (FINISH, (145, 270)),
+        (TRACK_BORDER, (0, 0)),
+        #(WAVEFRONT_SURFACE, (0, 0)),
     ]
 
     wavefront_propagation((190, 220, 0))
