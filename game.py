@@ -93,6 +93,9 @@ class Game:
             self.add_to_propagation_list((i-1, j, score + 1), coords_to_be_checked)
             self.add_to_propagation_list((i, j-1, score + 1), coords_to_be_checked)
 
+    def play_step(self, action):
+        
+
 
 """ def add_to_propagation_list(coord, coords_to_be_checked):
     i, j, score = coord
@@ -138,6 +141,8 @@ def main():
     clock = pygame.time.Clock()
     running = True
 
+    game = Game()
+
     """ images = [
         (GRASS, (0, 0)),
         (TRACK, (0, 0)),
@@ -150,10 +155,8 @@ def main():
 
     car = Car(starting_pos=CAR_STARTING_POS) """
     
-    while running:
-        clock.tick(FPS)
-
-        draw(WIN, images, car)
+    while True:
+        clock.tick(Game.FPS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -180,6 +183,11 @@ def main():
             car = Car(starting_pos=CAR_STARTING_POS)
 
         score = WAVEFRONT_DISTANCE[int(car.x)][int(car.y)]
+
+        game_over, score = game.play_step()
+
+        #draw(WIN, images, car)
+
         #print(score)
 
 
