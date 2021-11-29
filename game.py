@@ -1,6 +1,7 @@
 import pygame
 import time
 import numpy as np
+from pygame.constants import ACTIVEEVENT
 from utils import scale_image
 from car import Car
 
@@ -21,6 +22,11 @@ pygame.init()
 
 #WAVEFRONT_SURFACE = pygame.Surface([WIDTH, HEIGHT], pygame.SRCALPHA)
 #WAVEFRONT_DISTANCE = np.zeros((WIDTH, HEIGHT), int)
+
+class Action:
+    TURN_LEFT = 0
+    TURN_RIGHT = 1
+    ACCELERATE = 2
 
 class Game:
     GRASS = scale_image(pygame.image.load("imgs/grass.jpg"), 2.2)
@@ -93,8 +99,27 @@ class Game:
             self.add_to_propagation_list((i-1, j, score + 1), coords_to_be_checked)
             self.add_to_propagation_list((i, j-1, score + 1), coords_to_be_checked)
 
-    def play_step(self, action):
-        
+    def play_step(self, actions):
+        score = self.wavefront_distance[int(self.car.x)][int(self.car.y)]
+
+        accelerating = False
+        if actions[Action.TURN_LEFT]:
+            self.car.turn(left=True)
+        if actions[Action.TURN_RIGHT]:
+            self.car.turn(right=True)
+        if actions[Action.ACCELERATE]:
+            self.car.accelerate()
+            accelerating = True
+
+        if not accelerating:
+            self.car.decelerate()
+
+        game_over = False
+        if self.car.collide(self.TRACK_BORDER_MASK) == True:
+            self.car.crash()
+            game_over = True
+
+        return game_over, score
 
 
 """ def add_to_propagation_list(coord, coords_to_be_checked):
@@ -155,41 +180,30 @@ def main():
 
     car = Car(starting_pos=CAR_STARTING_POS) """
     
-    while True:
+    while running:
         clock.tick(Game.FPS)
+        game.draw()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 break
 
-        accelerating = False
-
+        actions = [False for i in range(3)]
         keys = pygame.key.get_pressed()
-
         if keys[pygame.K_a]:
-            car.turn(left=True)
+            actions[Action.TURN_LEFT] = True
         if keys[pygame.K_d]:
-            car.turn(right=True)
+            actions[Action.TURN_RIGHT] = True
         if keys[pygame.K_w]:
-            car.accelerate()
-            accelerating = True
+            actions[Action.ACCELERATE] = True
 
-        if not accelerating:
-            car.decelerate()
+        game_over, score = game.play_step(actions)
 
-        if car.collide(TRACK_BORDER_MASK) == True:
-            car.crash()
-            car = Car(starting_pos=CAR_STARTING_POS)
-
-        score = WAVEFRONT_DISTANCE[int(car.x)][int(car.y)]
-
-        game_over, score = game.play_step()
-
-        #draw(WIN, images, car)
-
-        #print(score)
-
+        if game_over:
+            game.reset()
+            #running = False
+            #break
 
     pygame.quit()
 
