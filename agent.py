@@ -1,4 +1,8 @@
+import torch
+import random
 from collections import deque
+
+from numpy import dtype
 from game import Game
 
 MAX_MEMORY = 100_000
@@ -12,6 +16,8 @@ class Agent:
         self.epsilon = 0
         self.gamma = 0
         self.memory = deque(maxlen=MAX_MEMORY)
+        self.model = None
+        self.trainer = None
 
     def get_state(self, game):
         state = [
@@ -27,16 +33,32 @@ class Agent:
         return state
 
     def remember(self, state, action, reward, next_state, game_over):
-        pass
+        self.memory.append((state, action, reward, next_state, game_over))
 
     def train_long_memory(self):
-        pass
+        if len(self.memory) > BATCH_SIZE:
+            sample = random.sample(self.memory, BATCH_SIZE)
+        else:
+            sample = self.memory
+
+        states, actions, rewards, next_states, game_overs = zip(*sample)
+        self.trainer.train_step(states, actions, rewards, next_states, game_overs)
 
     def train_short_memory(self, state, action, reward, next_state, game_over):
-        pass
+        self.trainer.train_step(state, action, reward, next_state, game_over)
 
     def get_action(self, state):
-        pass
+        self.epsilon = 80 - self.n_games
+        action = [False, False, False]
+
+        if random.randint(0, 200) < self.epsilon:
+            for i in range(3):
+                action[i] = bool(random.getrandbits(1))
+        else:
+            state0 = torch.tensor(state, dtype=torch.float)
+            prediction = self.model.predict(state0)
+
+
 
 def train():
     plot_scores = []
