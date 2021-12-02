@@ -94,12 +94,14 @@ class Game:
         if not accelerating:
             self.car.decelerate()
 
+        reward = 0
         game_over = False
         if self.car.collide(self.TRACK_BORDER_MASK) == True:
             self.car.crash()
             game_over = True
+            reward = -10
 
-        return game_over, score
+        return reward, game_over, score
 
 
 def main():
@@ -126,7 +128,7 @@ def main():
         if keys[pygame.K_w]:
             actions[Action.ACCELERATE] = True
 
-        game_over, score = game.play_step(actions)
+        reward, game_over, score = game.play_step(actions)
         #print(score)
 
         if game_over:

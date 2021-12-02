@@ -1,23 +1,23 @@
 import torch
 import random
 from collections import deque
-
-from numpy import dtype
 from game import Game
+from model import Linear_QNet, QTrainer
+from utils import plot
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.001
+LEARNING_RATE = 0.001
 
 class Agent:
 
     def __init__(self):
         self.n_games = 0
         self.epsilon = 0
-        self.gamma = 0
+        self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = None
-        self.trainer = None
+        self.model = Linear_QNet(7, 256, 3)
+        self.trainer = QTrainer(self.model, LEARNING_RATE, self.gamma)
 
     def get_state(self, game):
         state = [
@@ -56,13 +56,19 @@ class Agent:
                 action[i] = bool(random.getrandbits(1))
         else:
             state0 = torch.tensor(state, dtype=torch.float)
-            prediction = self.model.predict(state0)
+            prediction = self.model(state0)
+
+            for value, index in prediction:
+                if value > 0:
+                    action[index] = True
+
+        return action
 
 
 
 def train():
     plot_scores = []
-    plot_avg_scores = []
+    plot_mean_scores = []
     total_score = 0
     best_score = 0
     agent = Agent()
@@ -88,9 +94,17 @@ def train():
 
             if score > best_score:
                 best_score = score
+                agent.model.save()
                 
             print('Game:', agent.n_games)
             print('Score:', score)
             print('Record:', best_score)
+
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.n_games
+            plot_mean_scores.append(mean_score)
+            plot(plot_scores, plot_mean_scores)
+
 
 train()
