@@ -5,11 +5,14 @@ from utils import scale_image
 from car import Car
 
 pygame.init()
+clock = pygame.time.Clock()
 
 class Action:
     TURN_LEFT = 0
     TURN_RIGHT = 1
     ACCELERATE = 2
+    ACCELERATE_LEFT = 3
+    ACCELERATE_RIGHT = 4
 
 class Game:
     GRASS = scale_image(pygame.image.load("imgs/grass.jpg"), 2.2)
@@ -36,6 +39,7 @@ class Game:
 
     def reset(self):
         self.car = Car(starting_pos=self.CAR_STARTING_POS)
+        self.n_play_step = 0
 
     def draw(self):
         images = [
@@ -80,7 +84,10 @@ class Game:
             self.add_to_propagation_list((i, j-1, score + 1), coords_to_be_checked)
 
     def play_step(self, actions):
+        self.n_play_step += 1
         score = self.wavefront_distance[int(self.car.x)][int(self.car.y)]
+
+        #print(self.n_play_step, '/', score)
 
         accelerating = False
         if actions[Action.TURN_LEFT]:
@@ -90,43 +97,54 @@ class Game:
         if actions[Action.ACCELERATE]:
             self.car.accelerate()
             accelerating = True
+        if actions[Action.ACCELERATE_LEFT]:
+            self.car.turn(left=True)
+            self.car.accelerate()
+            accelerating = True
+        if actions[Action.ACCELERATE_RIGHT]:
+            self.car.turn(right=True)
+            self.car.accelerate()
+            accelerating = True
 
         if not accelerating:
             self.car.decelerate()
 
         reward = 0
         game_over = False
-        if self.car.collide(self.TRACK_BORDER_MASK) == True:
+        if self.car.collide(self.TRACK_BORDER_MASK) == True or (self.n_play_step > score + 100):
             self.car.crash()
             game_over = True
             reward = -10
+
+        clock.tick(self.FPS)
+        self.draw()
 
         return reward, game_over, score
 
 
 def main():
-    clock = pygame.time.Clock()
     running = True
 
     game = Game()
     
     while running:
-        clock.tick(Game.FPS)
-        game.draw()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 break
 
-        actions = [False for i in range(3)]
+        actions = [0 for i in range(5)]
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            actions[Action.TURN_LEFT] = True
-        if keys[pygame.K_d]:
-            actions[Action.TURN_RIGHT] = True
-        if keys[pygame.K_w]:
-            actions[Action.ACCELERATE] = True
+        if keys[pygame.K_a] and keys[pygame.K_w]:
+            actions[Action.ACCELERATE_LEFT] = 1
+        elif keys[pygame.K_d] and keys[pygame.K_w]:
+            actions[Action.ACCELERATE_RIGHT] = 1
+        elif keys[pygame.K_a]:
+            actions[Action.TURN_LEFT] = 1
+        elif keys[pygame.K_d]:
+            actions[Action.TURN_RIGHT] = 1
+        elif keys[pygame.K_w]:
+            actions[Action.ACCELERATE] = 1
 
         reward, game_over, score = game.play_step(actions)
         #print(score)
