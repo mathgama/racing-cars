@@ -51,6 +51,12 @@ class Car:
 
             if a != 0:
                 distance = math.sqrt((track_x - self.x)**2 + (track_y - self.y)**2)
+
+                if distance <= 30:
+                    distance = 1
+                else:
+                    distance = 0
+
                 return distance
 
 

@@ -16,13 +16,13 @@ class Agent:
         self.epsilon = 0
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = Linear_QNet(7, 256, 5)
+        self.model = Linear_QNet(6, 256, 5)
         self.trainer = QTrainer(self.model, LEARNING_RATE, self.gamma)
 
     def get_state(self, game):
         state = [
             game.car.actual_speed,
-            game.car.angle,
+            #game.car.angle,
             game.car.r_sensor,
             game.car.fr_sensor,
             game.car.f_sensor,
@@ -48,7 +48,7 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, game_over)
 
     def get_action(self, state):
-        self.epsilon = 80 - self.n_games
+        self.epsilon = 300 - self.n_games
         action = [0 for i in range(5)]
 
         if random.randint(0, 200) < self.epsilon:
