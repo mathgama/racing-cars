@@ -109,7 +109,7 @@ class Game:
         if not accelerating:
             self.car.decelerate()
 
-        reward = 10
+        reward = 0
         game_over = False
 
         if self.car.collide(self.TRACK_BORDER_MASK) == True:
@@ -121,6 +121,8 @@ class Game:
             self.car.crash()
             game_over = True
             reward = -50
+
+        #reward += score / 10
 
         clock.tick(self.FPS)
         self.draw()

@@ -8,13 +8,14 @@ from utils import plot
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
+#LEARNING_RATE = 0.1
 
 class Agent:
 
     def __init__(self):
         self.n_games = 0
         self.epsilon = 0
-        self.gamma = 0.9
+        self.gamma = 0.6
         self.memory = deque(maxlen=MAX_MEMORY)
         self.model = Linear_QNet(6, 256, 5)
         self.trainer = QTrainer(self.model, LEARNING_RATE, self.gamma)
@@ -48,7 +49,7 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, game_over)
 
     def get_action(self, state):
-        self.epsilon = 300 - self.n_games
+        self.epsilon = 400 - self.n_games
         action = [0 for i in range(5)]
 
         if random.randint(0, 200) < self.epsilon:

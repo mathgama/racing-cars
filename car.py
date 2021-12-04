@@ -7,7 +7,7 @@ TRACK_BORDER = pygame.image.load("imgs/track-border.png")
 
 class Car:
     #def __init__(self, starting_pos, accel_rate=0.5, max_speed=4, rotation_rate=3.5):
-    def __init__(self, starting_pos, accel_rate=1, max_speed=6, rotation_rate=4.5):
+    def __init__(self, starting_pos, accel_rate=1, max_speed=6, rotation_rate=6):
         self.accel_rate = accel_rate
         self.max_speed = max_speed
         self.actual_speed = 0
@@ -56,6 +56,10 @@ class Car:
                     distance = 1
                 else:
                     distance = 0
+                """ elif distance <= 100:
+                    distance = 2
+                else:
+                    distance = 3 """
 
                 return distance
 
